@@ -1,0 +1,51 @@
+version: '2'
+
+services:
+  varnish:
+    image: ckdemo.net/sys/docker/varnish:latest
+    build: ./
+    restart: always
+    network_mode: host
+    mem_limit: 2g
+    volumes:
+      # - ./src:/etc/varnish
+      - varnish_tmpfs:/var/lib/varnish
+    environment:
+      MALLOC_CONF: lg_dirty_mult:8,lg_chunk:18
+      BIND_PORT: :80
+      CACHE_SIZE: 2G
+      VCL_CONFIG: /etc/varnish/default.vcl
+      VARNISHD_PARAMS: -p default_ttl=120 -p default_grace=3600 -p nuke_limit=99999 -S /etc/varnish/secret -T 127.0.0.1:6082 -p vcl_dir=/etc/varnish/
+
+  exporter:
+    image: ckdemo.net/sys/docker/varnish:latest
+    build: ./
+    restart: always
+    mem_limit: 100m
+    network_mode: host
+    environment:
+      VSM_NOPID: 1
+    depends_on:
+      - varnish
+    volumes:
+      # - ./src:/etc/varnish:ro
+      - varnish_tmpfs:/var/lib/varnish/:ro
+    command: prometheus_varnish_exporter -no-exit
+
+  # varnishlog:
+  #   image: ckdemo.net/sys/docker/varnish:latest
+  #   build: ./
+  #   restart: always
+  #   network_mode: host
+  #   depends_on:
+  #     - varnish
+  #   volumes:
+  #     - ./src:/etc/varnish:ro
+  #     - varnish_tmpfs:/var/lib/varnish/:ro
+  #   command: varnishncsa
+
+volumes:
+  varnish_tmpfs:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs

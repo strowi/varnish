@@ -1,0 +1,32 @@
+package:
+  netbase:
+    installed: true
+  varnish:
+    installed: true
+    versions:
+    - 6.0.3-1~bionic
+port:
+  tcp:6082:
+    listening: true
+    ip:
+    - 127.0.0.1
+  tcp6:80:
+    listening: true
+    ip:
+    - '::'
+user:
+  varnish:
+    exists: true
+    uid: 101
+    gid: 101
+    groups:
+    - varnish
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+group:
+  varnish:
+    exists: true
+    gid: 101
+process:
+  varnishd:
+    running: true

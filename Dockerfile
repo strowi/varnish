@@ -1,0 +1,84 @@
+FROM ubuntu:18.04
+LABEL maintainer="Roman v. Gemmeren <roman.van-gemmeren@chefkoch.de>"
+
+ENV LC_ALL=C
+ENV DEBIAN_FRONTEND=noninteractive
+ARG BUILD_DEPS=" \
+      curl \
+      gnupg \
+      ca-certificates \
+      apt-transport-https \
+      git \
+      build-essential \
+      libtool \
+      make \
+      automake \
+      autotools-dev \
+      pkg-config \
+      python-docutils \
+      python-sphinx"
+
+ARG VARNISH_VERSION="6.0.3*"
+ARG VARNISH_MODULES_TAG=0.15.0
+ARG VMOD_RE_VERSION=6.0
+ARG VARNISH_EXPORTER_VERSION=1.4.1
+
+ENV VCL_CONFIG /etc/varnish/default.vcl
+ENV CACHE_SIZE 1g
+ENV VARNISHD_PARAMS -p default_ttl=120 -p default_grace=3600
+
+RUN apt-get update -qqy \
+  && apt-get install -qqy --no-install-recommends \
+    $BUILD_DEPS \
+  && curl -L https://packagecloud.io/varnishcache/varnish60lts/gpgkey | apt-key add - \
+  && echo "deb https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ bionic main" > /etc/apt/sources.list.d/varnish.list \
+  && echo "deb-src https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ bionic main " >> /etc/apt/sources.list.d/varnish.list \
+  && apt-get update -qq \
+  && apt-get install -qqy \
+    netbase \
+    varnish=${VARNISH_VERSION} \
+    varnish-dev=${VARNISH_VERSION} \
+  # install varnish-modules
+  && cd /usr/src \
+    && git clone --depth=1 --branch $VARNISH_MODULES_TAG https://github.com/varnish/varnish-modules.git \
+    && cd varnish-modules \
+    && ./bootstrap \
+    && ./configure --prefix=/usr \
+    && make -j8 \
+    && make -j8 check \
+    && make install \
+  # + libvmod-re
+  &&  cd /usr/src \
+    && git clone --depth=1 --branch $VMOD_RE_VERSION https://code.uplex.de/uplex-varnish/libvmod-re.git \
+    && cd /usr/src/libvmod-re \
+    && ./autogen.sh \
+    && ./configure --disable-dependency-tracking \
+    && make -j8 \
+    && make -j8 check \
+    && make install \
+  # + varnish-exporter
+  && cd /usr/local/bin \
+    && curl -sL https://github.com/jonnenauha/prometheus_varnish_exporter/releases/download/${VARNISH_EXPORTER_VERSION}/prometheus_varnish_exporter-${VARNISH_EXPORTER_VERSION}.linux-amd64.tar.gz \
+      |tar xz --strip-components=1 \
+  # && apt-get -y clean \
+  && apt-get purge -y \
+    $BUILD_DEPS \
+    varnish-dev \
+  && apt-get -y autoremove \
+  && rm -fr \
+    /usr/local/share/doc \
+    /usr/local/share/man \
+    /usr/src/* \
+    /tmp/* \
+    /var/lib/apt/* \
+    /var/cache/* \
+    /var/tmp/* \
+    /var/log/*
+
+RUN ln -s "lg_dirty_mult:8,lg_chunk:18" /etc/malloc.conf
+
+COPY src/ /
+
+EXPOSE 80
+VOLUME /var/lib/varnish
+CMD ["/docker-entrypoint.sh"]
