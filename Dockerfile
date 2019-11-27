@@ -18,7 +18,8 @@ ARG BUILD_DEPS=" \
       python-docutils \
       python-sphinx"
 
-ARG VARNISH_VERSION="6.0.3*"
+ARG DUMB_INIT_VERSION="1.2.2"
+ARG VARNISH_VERSION="6.0.5*"
 ARG VARNISH_MODULES_TAG=0.15.0
 ARG VMOD_RE_VERSION=6.0
 ARG VARNISH_EXPORTER_VERSION=1.4.1
@@ -30,6 +31,8 @@ ENV VARNISHD_PARAMS -p default_ttl=120 -p default_grace=3600
 RUN apt-get update -qqy \
   && apt-get install -qqy --no-install-recommends \
     $BUILD_DEPS \
+  && curl -L -o /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_amd64 \
+  && chmod +x /usr/local/bin/dumb-init \
   && curl -L https://packagecloud.io/varnishcache/varnish60lts/gpgkey | apt-key add - \
   && echo "deb https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ bionic main" > /etc/apt/sources.list.d/varnish.list \
   && echo "deb-src https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ bionic main " >> /etc/apt/sources.list.d/varnish.list \
@@ -81,4 +84,6 @@ COPY src/ /
 
 EXPOSE 80
 VOLUME /var/lib/varnish
+
+ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 CMD ["/docker-entrypoint.sh"]
