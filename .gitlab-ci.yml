@@ -13,10 +13,6 @@ build:
   script:
     - build
 
-include:
-  - template: Code-Quality.gitlab-ci.yml
-  - template: SAST.gitlab-ci.yml
-
 # goss:
 #   stage: test
 #   variables:
@@ -44,10 +40,6 @@ release:
   stage: release
   script:
     - release_container "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"  # push as :latest
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "dr.chefkoch.net/hub/sys/docker/varnish:latest"
-    - docker push "dr.chefkoch.net/hub/sys/docker/varnish:latest"
   only:
     - master
 
