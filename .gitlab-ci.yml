@@ -8,14 +8,14 @@ stages:
   # - release
   # - trigger
 
-build:
-  stage: build
-  script:
-    - build
+# build:
+#   stage: build
+#   script:
+#     - build
 
-include:
-  - template: Code-Quality.gitlab-ci.yml
-  - template: SAST.gitlab-ci.yml
+# include:
+#   - template: Code-Quality.gitlab-ci.yml
+#   - template: SAST.gitlab-ci.yml
 
 goss:
   stage: test
@@ -38,23 +38,16 @@ goss:
       junit: goss.xml
 
 
-release:
-  stage: release
-  script:
-    - release_container "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"  # push as :latest
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "dr.chefkoch.net/hub/sys/docker/varnish:latest"
-    - docker push "dr.chefkoch.net/hub/sys/docker/varnish:latest"
-  only:
-    - master
-
-trigger_build:
-  stage: trigger
-  script:
-    - apk --update --no-cache add curl
-    - curl -X POST -F token=397b473b6c3ffa7068d1ba4adc8997 -F "variables[VARNISH_TAG]=$CI_COMMIT_REF_SLUG" -F ref=master https://git.chefkoch.net/api/v4/projects/153/trigger/pipeline
-
+# release:
+#   stage: release
+#   script:
+#     - release_container "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"  # push as :latest
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+#     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+#     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "dr.chefkoch.net/hub/sys/docker/varnish:latest"
+#     - docker push "dr.chefkoch.net/hub/sys/docker/varnish:latest"
+#   only:
+#     - master
 
 .devops: &devops |
 
