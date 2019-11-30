@@ -10,8 +10,6 @@ stages:
 
 build:
   stage: build
-  environment:
-    DOCKER_HOST: tcp://localhost:2375
   script:
     - build
 
