@@ -21,13 +21,13 @@ goss:
   stage: test
   variables:
     GOSS_VER: v0.3.8
-    #GOSS_OPTS: "--format junit"
+    GOSS_OPTS: "--format junit"
     GOSS_SLEEP: 5s
     GOSS_FILES_STRATEGY: cp
   script:
     - mkdir -p /usr/local/bin
     - wget -O /usr/local/bin/goss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/goss-linux-amd64 && chmod +x /usr/local/bin/goss
-    - wget -O /usr/local/bin/dgoss https://github.com/aelsabbahy/goss/releases/download/v0.3.8/dgoss && chmod +x /usr/local/bin/dgoss
+    - wget -O /usr/local/bin/dgoss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/dgoss && chmod +x /usr/local/bin/dgoss
     - echo "Logging into Gitlab Registry..."
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - echo "Running Goss on Container..."
