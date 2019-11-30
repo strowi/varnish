@@ -20,7 +20,7 @@ ARG BUILD_DEPS=" \
 
 ARG DUMB_INIT_VERSION="1.2.2"
 ARG VARNISH_VERSION="6.0.5*"
-ARG VARNISH_MODULES_TAG=0.15.0
+ARG VARNISH_MODULES_TAG=6.0-lts
 ARG VMOD_RE_VERSION=6.0
 ARG VARNISH_EXPORTER_VERSION=1.4.1
 
@@ -47,8 +47,8 @@ RUN apt-get update -qqy \
     && cd varnish-modules \
     && ./bootstrap \
     && ./configure --prefix=/usr \
-    && make -j8 \
-    && make -j8 check \
+    && make -j4 \
+    && make -j4 check \
     && make install \
   # + libvmod-re
   &&  cd /usr/src \
@@ -56,8 +56,8 @@ RUN apt-get update -qqy \
     && cd /usr/src/libvmod-re \
     && ./autogen.sh \
     && ./configure --disable-dependency-tracking \
-    && make -j8 \
-    && make -j8 check \
+    && make -j4 \
+    && make -j4 check \
     && make install \
   # + varnish-exporter
   && cd /usr/local/bin \
