@@ -13,6 +13,10 @@ build:
   script:
     - build
 
+include:
+  - template: Code-Quality.gitlab-ci.yml
+  - template: SAST.gitlab-ci.yml
+
 goss:
   stage: test
   image: hub.chefkoch.net/sys/ci/test
@@ -30,14 +34,6 @@ goss:
     reports:
       junit: goss.xml
 
-
-clair:
-  stage: test
-  image: hub.chefkoch.net/sys/ci/test
-  script:
-    - klair $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  tags:
-    - dind
 
 release:
   stage: release
@@ -105,21 +101,6 @@ trigger_build:
     docker push "$CI_REGISTRY_IMAGE"
   }
 
-  function sast_container() {
-    if [[ -n "$CI_REGISTRY_USER" ]]; then
-      echo "Logging to GitLab Container Registry with CI credentials..."
-      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-      echo ""
-    fi
-
-    if [[ -n "$1" ]]; then
-      echo "Scanning image $1"
-      klar "$1" || true
-    else
-      echo "Scanning image $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-      klar "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" || true
-    fi
-  }
 
 before_script:
   - *devops
