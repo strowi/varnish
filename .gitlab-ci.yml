@@ -37,7 +37,8 @@ goss:
   artifacts:
     reports:
       junit: goss.xml
-
+  only:
+    - branches
 
 release:
   stage: release
