@@ -1,0 +1,125 @@
+image: docker:stable
+services:
+- docker:stable-dind
+
+stages:
+  - build
+  - test
+  - release
+  - trigger
+
+build:
+  stage: build
+  script:
+    - build
+
+goss:
+  stage: test
+  image: hub.chefkoch.net/sys/ci/test
+  variables:
+    #GOSS_OPTS: "--format junit"
+    GOSS_SLEEP: 5s
+    GOSS_FILES_STRATEGY: cp
+  script:
+    - echo "Logging into Gitlab Registry..."
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - echo "Running Goss on Container..."
+    - dgoss run -e BIND_PORT=":80" -e VCL_CONFIG="/etc/varnish/default.vcl" -e CACHE_SIZE="1g" -e VARNISHD_PARAMS="-p feature=+http2 -p default_ttl=120 -p default_grace=3600 -S /etc/varnish/secret -T 127.0.0.1:6082" $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG > goss.xml
+
+  artifacts:
+    reports:
+      junit: goss.xml
+
+
+clair:
+  stage: test
+  image: hub.chefkoch.net/sys/ci/test
+  script:
+    - klair $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  tags:
+    - dind
+
+release:
+  stage: release
+  script:
+    - release_container "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"  # push as :latest
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "dr.chefkoch.net/hub/sys/docker/varnish:latest"
+    - docker push "dr.chefkoch.net/hub/sys/docker/varnish:latest"
+  only:
+    - master
+
+trigger_build:
+  stage: trigger
+  script:
+    - apk --update --no-cache add curl
+    - curl -X POST -F token=397b473b6c3ffa7068d1ba4adc8997 -F "variables[VARNISH_TAG]=$CI_COMMIT_REF_SLUG" -F ref=master https://git.chefkoch.net/api/v4/projects/153/trigger/pipeline
+
+
+.devops: &devops |
+
+  # wrapper around container building
+  # build
+  #   - builds default Dockerfile -> reponame:latest
+  # build $1
+  #   - builds Dockerfile.$1 -> reponame:$1
+  #
+  function build() {
+
+    if [[ -n "$CI_REGISTRY_USER" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    if [[ -n "$2" ]]; then
+      echo "Building docker image from $2 / Dockerfile.$1 ..."
+      docker build --cache-from $CI_REGISTRY_IMAGE/$2:${CI_COMMIT_REF_SLUG}_${1} -t "$CI_REGISTRY_IMAGE/$2:${CI_COMMIT_REF_SLUG}_${1}" -f Dockerfile.$1 $2
+      echo "Pushing to GitLab Container Registry..."
+      docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG_$1"
+
+    elif [[ -n "$1" ]]; then
+      echo "Building docker image from Dockerfile.$1 ..."
+      docker build --cache-from $CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG}_${1} -t "$CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG}_${1}" -f Dockerfile.$1 .
+      echo "Pushing to GitLab Container Registry..."
+      docker push "$CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG}_${1}"
+    else
+      echo "Building docker image from Dockerfile ..."
+      docker build --cache-from $CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG} -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
+      echo "Pushing to GitLab Container Registry..."
+      docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    fi
+    echo ""
+  }
+
+  function release_container() {
+    if [[ -n "$CI_REGISTRY_USER" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    docker pull "$1"
+    docker tag "$1" "$CI_REGISTRY_IMAGE"
+    docker push "$CI_REGISTRY_IMAGE"
+  }
+
+  function sast_container() {
+    if [[ -n "$CI_REGISTRY_USER" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    if [[ -n "$1" ]]; then
+      echo "Scanning image $1"
+      klar "$1" || true
+    else
+      echo "Scanning image $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+      klar "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" || true
+    fi
+  }
+
+before_script:
+  - *devops
