@@ -17,28 +17,28 @@ include:
   - template: Code-Quality.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
 
-goss:
-  stage: test
-  variables:
-    GOSS_VER: v0.3.8
-    GOSS_OPTS: "--format junit"
-    GOSS_SLEEP: 5s
-    GOSS_FILES_STRATEGY: cp
-    GOSS_PATH: /usr/local/bin/
-  script:
-    - echo "Logging into Gitlab Registry..."
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    - echo "Running Goss on Container..."
-    - apk --update  --no-cache add bash
-    - wget -O /usr/local/bin/goss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/goss-linux-amd64 && chmod +x /usr/local/bin/goss
-    - wget -O /usr/local/bin/dgoss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/dgoss && chmod +x /usr/local/bin/dgoss
-    - dgoss run -e BIND_PORT=":80" -e VCL_CONFIG="/etc/varnish/default.vcl" -e CACHE_SIZE="500m" -e VARNISHD_PARAMS="-p feature=+http2 -p default_ttl=120 -p default_grace=3600 -S /etc/varnish/secret -T 127.0.0.1:6082" $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG > goss.xml
+# goss:
+#   stage: test
+#   variables:
+#     GOSS_VER: v0.3.8
+#     GOSS_OPTS: "--format junit"
+#     GOSS_SLEEP: 5s
+#     GOSS_FILES_STRATEGY: cp
+#     GOSS_PATH: /usr/local/bin/
+#   script:
+#     - echo "Logging into Gitlab Registry..."
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+#     - echo "Running Goss on Container..."
+#     - apk --update  --no-cache add bash
+#     - wget -O /usr/local/bin/goss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/goss-linux-amd64 && chmod +x /usr/local/bin/goss
+#     - wget -O /usr/local/bin/dgoss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/dgoss && chmod +x /usr/local/bin/dgoss
+#     - dgoss run -e BIND_PORT=":80" -e VCL_CONFIG="/etc/varnish/default.vcl" -e CACHE_SIZE="500m" -e VARNISHD_PARAMS="-p feature=+http2 -p default_ttl=120 -p default_grace=3600 -S /etc/varnish/secret -T 127.0.0.1:6082" $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG > goss.xml
 
-  artifacts:
-    reports:
-      junit: goss.xml
-  only:
-    - branches
+#   artifacts:
+#     reports:
+#       junit: goss.xml
+#   only:
+#     - branches
 
 release:
   stage: release
