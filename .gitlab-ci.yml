@@ -3,10 +3,10 @@ services:
 - docker:stable-dind
 
 stages:
-  - build
+  # - build
   - test
-  - release
-  - trigger
+  # - release
+  # - trigger
 
 build:
   stage: build
@@ -25,9 +25,9 @@ goss:
     GOSS_SLEEP: 5s
     GOSS_FILES_STRATEGY: cp
   script:
-    - mkdir -p /usr/local/bin
     - wget -O /usr/local/bin/goss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/goss-linux-amd64 && chmod +x /usr/local/bin/goss
     - wget -O /usr/local/bin/dgoss https://github.com/aelsabbahy/goss/releases/download/${GOSS_VER}/dgoss && chmod +x /usr/local/bin/dgoss
+    - ls -al /usr/local/bin
     - echo "Logging into Gitlab Registry..."
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - echo "Running Goss on Container..."
