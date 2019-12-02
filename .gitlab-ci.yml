@@ -57,7 +57,9 @@ release:
   #
   function build() {
 
+    env
     if [[ -n "$DOCKER_TOKEN" ]]; then
+
       echo "Logging in to Docker Registry with token..."
       docker login -u "strowi" -p "$DOCKER_TOKEN" "docker.io"
       echo ""
