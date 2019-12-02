@@ -2,7 +2,7 @@ version: '2'
 
 services:
   varnish:
-    image: ckdemo.net/sys/docker/varnish:latest
+    image: registry.gitlab.com/strowi/varnish:latest
     build: ./
     restart: always
     network_mode: host
@@ -18,7 +18,7 @@ services:
       VARNISHD_PARAMS: -p default_ttl=120 -p default_grace=3600 -p nuke_limit=99999 -S /etc/varnish/secret -T 127.0.0.1:6082 -p vcl_dir=/etc/varnish/
 
   exporter:
-    image: ckdemo.net/sys/docker/varnish:latest
+    image: registry.gitlab.com/strowi/varnish:latest
     build: ./
     restart: always
     mem_limit: 100m
@@ -33,7 +33,7 @@ services:
     command: prometheus_varnish_exporter -no-exit
 
   # varnishlog:
-  #   image: ckdemo.net/sys/docker/varnish:latest
+  #   image: registry.gitlab.com/strowi/varnish:latest
   #   build: ./
   #   restart: always
   #   network_mode: host
