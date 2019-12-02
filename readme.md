@@ -1,5 +1,7 @@
 # Varnish-Image
 
+Repo-Url: [https://gitlab.com/strowi/varnish](https://gitlab.com/strowi/varnish)
+
 Contains Varnish 6.0.1 and exporter (port: 9131).
 
 Also contains the exporter to be started in a different container and shared `/var/lib/varnish`.
