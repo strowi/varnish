@@ -8,10 +8,10 @@ stages:
   - release
   - trigger
 
-# build:
-#   stage: build
-#   script:
-#     - build
+build:
+  stage: build
+  script:
+    - build
 
 # goss:
 #   stage: test
@@ -57,14 +57,6 @@ release:
   #
   function build() {
 
-    env
-    if [[ -n "$DOCKER_TOKEN" ]]; then
-
-      echo "Logging in to Docker Registry with token..."
-      docker login -u "strowi" -p "$DOCKER_TOKEN" "docker.io"
-      echo ""
-    fi
-
     if [[ -n "$CI_REGISTRY_USER" ]]; then
       echo "Logging in to GitLab Container Registry with CI credentials..."
       docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
@@ -95,6 +87,12 @@ release:
     if [[ -n "$CI_REGISTRY_USER" ]]; then
       echo "Logging to GitLab Container Registry with CI credentials..."
       docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    if [[ -n "$DOCKER_TOKEN" ]]; then
+      echo "Logging in to Docker Registry with token..."
+      docker login -u "strowi" -p "$DOCKER_TOKEN" "docker.io"
       echo ""
     fi
 
