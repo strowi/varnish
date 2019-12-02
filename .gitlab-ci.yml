@@ -8,10 +8,10 @@ stages:
   - release
   - trigger
 
-build:
-  stage: build
-  script:
-    - build
+# build:
+#   stage: build
+#   script:
+#     - build
 
 # goss:
 #   stage: test
@@ -59,7 +59,7 @@ release:
 
     if [[ -n "$DOCKER_TOKEN" ]]; then
       echo "Logging in to Docker Registry with token..."
-      docker login -u "strowi" -p "$DOCKER_TOKEN"
+      docker login -u "strowi" -p "$DOCKER_TOKEN" "docker.io"
       echo ""
     fi
 
