@@ -4,7 +4,7 @@ package:
   varnish:
     installed: true
     versions:
-    - 6.0.5-1~bionic
+    - 6.0.6-1~bionic
 port:
   tcp:6082:
     listening: true
