@@ -25,6 +25,7 @@ release:
   script:
     - release_latest
     - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish"
+    - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish"
   only:
     - master
