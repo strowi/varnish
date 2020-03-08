@@ -2,6 +2,9 @@ image: docker:stable
 services:
 - docker:stable-dind
 
+include:
+  - template: Container-Scanning.gitlab-ci.yml
+
 stages:
   - build
   - test
