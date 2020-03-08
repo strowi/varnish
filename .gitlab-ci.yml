@@ -2,6 +2,9 @@ include:
   - remote: 'https://gitlab.com/strowi/ci-templates/-/raw/master/build.yml'
   - remote: 'https://gitlab.com/strowi/ci-templates/-/raw/master/tests.yml'
 
+variables:
+  CODE_QUALITY_DISABLED: "true"
+
 stages:
   - build
   - test
