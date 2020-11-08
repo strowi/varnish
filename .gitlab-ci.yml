@@ -16,8 +16,8 @@ build:
   script:
     - build_image
 
-container_scanning:
-  extends: .container_scanning
+# container_scanning:
+#   extends: .container_scanning
 
 release:
   extends: .build
