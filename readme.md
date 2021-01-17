@@ -8,9 +8,9 @@ Docker-Image containing:
 * [Varnish-Modules](https://github.com/varnish/varnish-modules.git)
 * [libvmod-re](https://code.uplex.de/uplex-varnish/libvmod-re.git)
 * [varnish-exporter 1.5.2](https://github.com/jonnenauha/prometheus_varnish_exporter) listening on Port `9131`.
-* [varnish_reload.sh](./src/usr/local/bin/varnish_reload.sh) - script to reload varnish-config
-* [be_state.sh](./src/usr/local/bin/be_state.sh) - simple script to change backend-status
-* [varnishtop_metrics.sh](./src/usr/local/bin/varnishtop_metrics.sh) - export top backend requests as prometheus metrics
+* [varnish_reload.sh](./src/usr/local/bin/varnish_reload.sh): script to reload varnish-config
+* [be_state.sh](./src/usr/local/bin/be_state.sh): simple script to change backend-status (uses grep to find backend)
+* [varnishtop_metrics.sh](./src/usr/local/bin/varnishtop_metrics.sh): export top backend requests as prometheus metrics (node-exporter/textfile)
 
 Opposed to other solutions the varnish-exporter is run in a separate
 container sharing `/var/lib/varnish`.
@@ -44,6 +44,32 @@ And then just run the following to reload the config:
 
 ```bash
 ~> docker-compose exec -T varnish varnish_reload.sh -m0 /etc/varnish/default.vcl
+```
+
+### be_state.sh
+
+Since above `varnish_reload.sh`  appends a timestamp to the config-name each backends name changes with a config-reload:
+
+```shell
+> varnishadm backend.list
+Backend name                   Admin      Probe                Last updated
+reload_20210105_104634.backend1 probe      Healthy             3/3 Tue, 05 Jan 2021 10:46:38 GMT
+reload_20210105_104634.backend2 probe      Healthy             3/3 Tue, 05 Jan 2021 10:46:38 GMT
+reload_20210105_104634.backend3 probe      Healthy             3/3 Tue, 05 Jan 2021 10:46:38 GMT
+```
+
+This can get very annoying when you need to disable single backends. On multiple server even more so.
+
+So `be_state.sh` takes a host and a status as argument and greps for the host settings the status.
+
+```shell
+~> be_state.sh backend1 sick
+# looking for backend containing backend1
+reload_20210105_104634.backend1
+# setting varnish-backend on  to sick
+~> varnishadm. backend.list
+Backend name                   Admin      Probe                Last updated
+reload_20210105_104634.backend1 probe      sick             3/3 Tue, 05 Jan 2021 10:46:38 GMT
 ```
 
 ## Docker Image
