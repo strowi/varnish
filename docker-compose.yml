@@ -8,7 +8,7 @@ services:
     network_mode: host
     mem_limit: 2g
     volumes:
-      # - ./src:/etc/varnish
+      - ./src:/etc/varnish
       - varnish_tmpfs:/var/lib/varnish
     environment:
       MALLOC_CONF: lg_dirty_mult:8,lg_chunk:18
