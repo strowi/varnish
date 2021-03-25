@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 LABEL maintainer="Roman v. Gemmeren <roman.van-gemmeren@chefkoch.de>"
 
 ENV LC_ALL=C
@@ -15,8 +15,8 @@ ARG BUILD_DEPS=" \
       automake \
       autotools-dev \
       pkg-config \
-      python-docutils \
-      python-sphinx"
+      python3-docutils \
+      python3-sphinx"
 
 ARG DUMB_INIT_VERSION="1.2.2"
 ARG VARNISH_VERSION="6.0.7*"
@@ -34,8 +34,8 @@ RUN apt-get update -qqy \
   && curl -L -o /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_amd64 \
   && chmod +x /usr/local/bin/dumb-init \
   && curl -L https://packagecloud.io/varnishcache/varnish60lts/gpgkey | apt-key add - \
-  && echo "deb https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ bionic main" > /etc/apt/sources.list.d/varnish.list \
-  && echo "deb-src https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ bionic main " >> /etc/apt/sources.list.d/varnish.list \
+  && echo "deb https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ focal main" > /etc/apt/sources.list.d/varnish.list \
+  && echo "deb-src https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ focal main " >> /etc/apt/sources.list.d/varnish.list \
   && apt-get update -qq \
   && apt-get install -qqy \
     netbase \
