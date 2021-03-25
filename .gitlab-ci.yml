@@ -43,7 +43,5 @@ release:
     - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish"
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish"
-    - test -n "${CI_COMMIT_TAG}" && docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish:${CI_COMMIT_TAG}" && docker push "strowi/varnish:${CI_COMMIT_TAG}" || echo "## No tag found!"
   only:
     - master
-    - tags
