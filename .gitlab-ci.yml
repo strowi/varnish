@@ -29,7 +29,10 @@ release:
   script:
     - release_latest
     - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish"
+    - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish:${CI_COMMIT_TAG}"
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish"
+    - docker push "strowi/varnish:${CI_COMMIT_TAG}"
   only:
     - master
+    - tags
