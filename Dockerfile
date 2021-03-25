@@ -78,7 +78,7 @@ RUN apt-get update -qqy \
     /var/tmp/* \
     /var/log/*
 
-RUN ln -s "lg_dirty_mult:8,lg_chunk:18" /etc/malloc.conf
+# RUN ln -s "lg_dirty_mult:8,lg_chunk:18" /etc/malloc.conf
 
 COPY src/ /
 
