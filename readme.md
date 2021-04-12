@@ -2,7 +2,14 @@
 
 Repo-Url: [https://gitlab.com/strowi/varnish](https://gitlab.com/strowi/varnish)
 
-Docker-Image containing:
+## Docker Image
+
+Should be available on docker and gitlab:
+
+* [strowi/varnish:latest](https://hub.docker.com/repository/docker/strowi/varnish)
+* [registry.gitlab.com/strowi/varnish:latest](https://gitlab.com/strowi/varnish)
+
+### containing
 
 * [Varnish 6.0.7](https://www.varnish-cache.org)
 * [Varnish-Modules](https://github.com/varnish/varnish-modules.git)
@@ -71,11 +78,3 @@ reload_20210105_104634.backend1
 Backend name                   Admin      Probe                Last updated
 reload_20210105_104634.backend1 probe      sick             3/3 Tue, 05 Jan 2021 10:46:38 GMT
 ```
-
-## Docker Image
-
-Should be available on docker and gitlab:
-
-* [strowi/varnish:latest](https://hub.docker.com/repository/docker/strowi/varnish)
-* [registry.gitlab.com/strowi/varnish:latest](https://gitlab.com/strowi/varnish)
-
