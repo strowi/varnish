@@ -40,7 +40,7 @@ services:
     command: varnishncsa -q 'RespStatus ~ "^50"'
 
   # varnishtop:
-  #   image: hub.chefkoch.net/sys/docker/varnish:latest
+  #   registry.gitlab.com/strowi/varnish:latest
   #   restart: always
   #   network_mode: host
   #   depends_on:

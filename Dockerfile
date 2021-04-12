@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-LABEL maintainer="Roman v. Gemmeren <roman.van-gemmeren@chefkoch.de>"
+LABEL maintainer="Roman v. Gemmeren <strowi@hasnoname.de>"
 
 ENV LC_ALL=C
 ENV DEBIAN_FRONTEND=noninteractive
