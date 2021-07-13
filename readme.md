@@ -4,10 +4,10 @@ Repo-Url: [https://gitlab.com/strowi/varnish](https://gitlab.com/strowi/varnish)
 
 Docker-Image containing:
 
-* [Varnish 6.0.7](https://www.varnish-cache.org)
+* [Varnish 6.0.8](https://www.varnish-cache.org)
 * [Varnish-Modules](https://github.com/varnish/varnish-modules.git)
 * [libvmod-re](https://code.uplex.de/uplex-varnish/libvmod-re.git)
-* [varnish-exporter 1.5.2](https://github.com/jonnenauha/prometheus_varnish_exporter) listening on Port `9131`.
+* [varnish-exporter 1.6](https://github.com/jonnenauha/prometheus_varnish_exporter) listening on Port `9131`.
 * [varnish_reload.sh](./src/usr/local/bin/varnish_reload.sh): script to reload varnish-config
 * [be_state.sh](./src/usr/local/bin/be_state.sh): simple script to change backend-status (uses grep to find backend)
 * [varnishtop_metrics.sh](./src/usr/local/bin/varnishtop_metrics.sh): export top backend requests as prometheus metrics (node-exporter/textfile)
