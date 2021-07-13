@@ -39,7 +39,7 @@ dgoss:varnish:
 
 release_docker_com:
   extends: .build
-  stage: release_branch
+  stage: release
   script:
     - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish:${CI_COMMIT_REF_SLUG}"
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
