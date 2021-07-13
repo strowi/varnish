@@ -37,6 +37,17 @@ dgoss:varnish:
       -e VARNISHD_PARAMS="-p feature=+http2 -p default_ttl=120 -p default_grace=3600 -S /etc/varnish/secret -T 127.0.0.1:6082"
       ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA} > goss.xml
 
+release_docker_com:
+  extends: .build
+  stage: release_branch
+  script:
+    - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish:${CI_COMMIT_REF_SLUG}"
+    - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
+    - docker push "strowi/varnish:${CI_COMMIT_REF_SLUG}"
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: always
+
 release:
   extends: .build
   stage: release
@@ -45,5 +56,6 @@ release:
     - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish"
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish"
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
