@@ -39,7 +39,8 @@ release_docker_com:
   extends: .build
   stage: release
   script:
-    - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish:${CI_COMMIT_REF_SLUG}"
+    - docker pull "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+    - docker tag "$CI_REGISTRY_IMAGE:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}" "strowi/varnish:${CI_COMMIT_REF_SLUG}"
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish:${CI_COMMIT_REF_SLUG}"
   rules:
@@ -53,7 +54,7 @@ release:
   stage: release
   script:
     - release_latest
-    - docker tag "$CI_REGISTRY_IMAGE" "strowi/varnish"
+    - docker tag "${CI_REGISTRY_IMAGE}" "strowi/varnish"
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish"
   rules:
