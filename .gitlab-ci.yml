@@ -53,13 +53,6 @@ release:
   stage: release
   script:
     - release_latest
-<<<<<<< HEAD
-    - docker tag "$CI_REGISTRY_IMAGE" "strowi/$CI_PROJECT_NAME"
-    - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
-    - docker push "strowi/$CI_PROJECT_NAME"
-  only:
-    - master
-=======
     - docker tag "${CI_REGISTRY_IMAGE}" "strowi/varnish"
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish"
@@ -67,4 +60,3 @@ release:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
     - when: never
->>>>>>> v6-0-8
