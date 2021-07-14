@@ -45,6 +45,8 @@ release_docker_com:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: never
+    - when: always
+
 
 release:
   extends: .build
