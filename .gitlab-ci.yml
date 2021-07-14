@@ -43,8 +43,8 @@ release_docker_com:
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish:${CI_COMMIT_REF_SLUG}"
   rules:
-    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
-      when: always
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: never
 
 release:
   extends: .build
@@ -55,5 +55,6 @@ release:
     - echo $DOCKER_TOKEN | docker login -u strowi --password-stdin
     - docker push "strowi/varnish"
   rules:
-    - if: $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
+    - when: never
