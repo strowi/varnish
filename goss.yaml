@@ -4,7 +4,7 @@ package:
   varnish:
     installed: true
     versions:
-    - 6.0.7-1~focal
+    - 6.0.8-1~focal
 port:
   tcp:6082:
     listening: true
