@@ -15,8 +15,7 @@ ARG BUILD_DEPS=" \
       automake \
       autotools-dev \
       pkg-config \
-      python3-docutils \
-      python3-sphinx"
+      python3-docutils"
 
 ARG DUMB_INIT_VERSION="1.2.2"
 ARG VARNISH_VERSION="6.0.8*"
