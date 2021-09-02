@@ -11,7 +11,7 @@ Should be available on docker and gitlab:
 
 ### containing
 
-* [Varnish 6.0.8](https://www.varnish-cache.org)
+* [Varnish 6.6.X](https://www.varnish-cache.org)
 * [Varnish-Modules](https://github.com/varnish/varnish-modules.git)
 * [libvmod-re](https://code.uplex.de/uplex-varnish/libvmod-re.git)
 * [varnish-exporter 1.6](https://github.com/jonnenauha/prometheus_varnish_exporter) listening on Port `9131`.

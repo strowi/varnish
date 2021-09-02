@@ -18,9 +18,9 @@ ARG BUILD_DEPS=" \
       python3-docutils"
 
 ARG DUMB_INIT_VERSION="1.2.2"
-ARG VARNISH_VERSION="6.0.8*"
-ARG VARNISH_MODULES_TAG=6.0-lts
-ARG VMOD_RE_VERSION=6.0
+ARG VARNISH_VERSION="6.6.*"
+ARG VARNISH_MODULES_TAG=6.6
+ARG VMOD_RE_VERSION=6.6
 ARG VARNISH_EXPORTER_VERSION=1.6
 
 ENV VCL_CONFIG /etc/varnish/default.vcl
@@ -32,9 +32,9 @@ RUN apt-get update -qqy \
     $BUILD_DEPS \
   && curl -L -o /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_amd64 \
   && chmod +x /usr/local/bin/dumb-init \
-  && curl -L https://packagecloud.io/varnishcache/varnish60lts/gpgkey | apt-key add - \
-  && echo "deb https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ focal main" > /etc/apt/sources.list.d/varnish.list \
-  && echo "deb-src https://packagecloud.io/varnishcache/varnish60lts/ubuntu/ focal main " >> /etc/apt/sources.list.d/varnish.list \
+  && curl -L https://packagecloud.io/varnishcache/varnish66/gpgkey | apt-key add - \
+  && echo "deb https://packagecloud.io/varnishcache/varnish66/ubuntu/ focal main" > /etc/apt/sources.list.d/varnish.list \
+  && echo "deb-src https://packagecloud.io/varnishcache/varnish66/ubuntu/ focal main " >> /etc/apt/sources.list.d/varnish.list \
   && apt-get update -qq \
   && apt-get install -qqy \
     netbase \
