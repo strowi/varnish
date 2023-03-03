@@ -8,7 +8,7 @@ name: build
 on:
   push:
     # The branches below must be a subset of the branches above
-    branches: [ "master" ]
+    branches: [ "*" ]
 
 permissions:
   contents: read
